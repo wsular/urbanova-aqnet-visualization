@@ -1,0 +1,24 @@
+#!/Users/vonw/anaconda/bin/python
+"""
+Created on Fri Mar 17 12:11:37 2017
+
+@author: Von P. Walden, Washington State University
+"""
+from AqnetSensor import acquireAqnetSensorData, plotAqnetSensorData, mapAqnetSensorData
+from datetime import datetime, timedelta
+
+# !! NOTE that the start and end times for the Itron cloud API query must be in UTC.
+today     = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+yesterday = (datetime.utcnow()-timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')
+
+# Acquire data from Itron cloud.
+aq221, df221 = acquireAqnetSensorData(221,yesterday, today)
+aq223, df223 = acquireAqnetSensorData(223,yesterday, today)
+aq224, df224 = acquireAqnetSensorData(224,yesterday, today)
+
+# Create html plots of Aqnet sensor data.
+plotAqnetSensorData(221,aq221)
+plotAqnetSensorData(223,aq223)
+plotAqnetSensorData(224,aq224)
+
+mapAqnetSensorData()
