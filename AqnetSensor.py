@@ -13,7 +13,7 @@ def acquireAqnetSensorData(mowr_ID, start_time, end_time):
     import json
     
     # !! NOTE THAT the start and end times of the query must be in UTC. !!
-    os.system('curl -s -H "API-TOKEN-BEARER: MjAmOGRjZGNmMTktYjg3OS00NjBjLWJkZDktOTI0OGFiMjlkMWY3" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > /Users/vonw/work/software/aqnet/data/tmp.json');
+    os.system('curl -s -H "API-TOKEN-BEARER: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > /Users/vonw/work/software/aqnet/data/tmp.json');
     
     with open('/Users/vonw/work/software/aqnet/data/tmp.json') as data_file:    
         raw = json.load(data_file)
