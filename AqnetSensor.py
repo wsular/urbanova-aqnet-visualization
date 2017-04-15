@@ -28,7 +28,7 @@ def acquireAqnetSensorData(mowr_ID, start_time, end_time):
     for i in list(range(len(df))):
         arr       = np.array(df.iloc[i]['data'])
         if(len(arr)==0): continue   # Nicely handles variables with missing data.
-        ind       = np.where(arr[:,1] != 'Connection closed by UNKNOWN\r')[0]
+        ind       = np.where(arr[:,1] != 'Connection closed by\r')[0]
         time      = [datetime.fromtimestamp(a) for a in arr[ind,0].astype('int')]
         aq[df.iloc[i]['name'][1:].replace('/','_')] = {'data': pd.Series(arr[ind,1].astype('float'), index=time)}
 
