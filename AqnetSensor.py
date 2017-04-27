@@ -122,3 +122,21 @@ def mapAqnetSensorData():
     
     return
 
+def saveAqnetSensorData(filename, mowr_ID, start_time, end_time, method=None):
+    """
+    Reads in Aqnet data and saves data variables in CSV file.
+    
+        Written by Von P. Walden
+        Washington State University
+        27 April 2017
+    """
+    aq, tdf = acquireAqnetSensorData(mowr_ID, start_time, end_time)
+    
+    # Currently only outputs T, U, P, CO2, PM2.5, and dB.
+    df = pd.concat([aq['htu21d_T']['data'], aq['htu21d_RH']['data'], aq['bmp280_P']['data'], aq['k30_CO2']['data'], aq['opcn2_PM2.5']['data'], aq['dB']['data'] ], axis=1).fillna(method=method)
+    df.columns = ['Air Temperature (C)', 'Relative Humidity (%)', 'Pressure (mb)', 'CO2 (ppmv)', 'PM2.5 (ug/m^3)', 'dB']
+    df.index.name = 'Datetime'
+    df.to_csv(filename)
+    
+    return
+
