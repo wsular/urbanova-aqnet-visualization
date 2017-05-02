@@ -122,9 +122,10 @@ def mapAqnetSensorData():
     
     return
 
-def saveAqnetSensorData(filename, mowr_ID, start_time, end_time, method=None):
+def saveAqnetSensorData(filename, mowr_ID, start_time, end_time):
     """
     Reads in Aqnet data and saves data variables in CSV file.
+    These data are averaged into 2-minute averages to eliminate gaps in the time series.
     
         Written by Von P. Walden
         Washington State University
@@ -133,10 +134,115 @@ def saveAqnetSensorData(filename, mowr_ID, start_time, end_time, method=None):
     aq, tdf = acquireAqnetSensorData(mowr_ID, start_time, end_time)
     
     # Currently only outputs T, U, P, CO2, PM2.5, and dB.
-    df = pd.concat([aq['htu21d_T']['data'], aq['htu21d_RH']['data'], aq['bmp280_P']['data'], aq['k30_CO2']['data'], aq['opcn2_PM2.5']['data'], aq['dB']['data'] ], axis=1).fillna(method=method)
+    df = pd.concat([aq['htu21d_T']['data'], aq['htu21d_RH']['data'], aq['bmp280_P']['data'], aq['k30_CO2']['data'], aq['opcn2_PM2.5']['data'], aq['dB']['data'] ], axis=1)
+    df = df.resample('2T').mean()
     df.columns = ['Air Temperature (C)', 'Relative Humidity (%)', 'Pressure (mb)', 'CO2 (ppmv)', 'PM2.5 (ug/m^3)', 'dB']
     df.index.name = 'Datetime'
     df.to_csv(filename)
     
     return
 
+def saveWeeklyAqnetSensorData(end_time):
+    """
+    Reads in Aqnet data FOR THE PREVIOUS WEEK and generates HTML graphics.
+    
+    Input:
+        start_time - local time for start of week (typically Monday at 00:00:00)
+    
+        Written by Von P. Walden
+        Washington State University
+        2 May 2017
+    """
+    import pytz
+    from bokeh.plotting import figure, save, output_file, vplot
+    from bokeh.models   import Range1d
+    
+    # IMPORTANT: Currently ignoring all Python warnings.
+    #            This is done to avoid a couple of Bokeh warnings related to saving html output.
+    import warnings
+    warnings.filterwarnings('ignore')
+    
+    utc   = pytz.timezone('UTC')
+    etime = datetime.strptime(end_time,'%Y-%m-%d %H:%M:%S').astimezone(utc)
+    btime = etime - timedelta(weeks=1)
+    btime = btime.strftime('%Y-%m-%d %H:%M:%S')
+    etime = etime.strftime('%Y-%m-%d %H:%M:%S')
+    # Acquire data from Itron cloud.
+    aq221,df221 = acquireAqnetSensorData(221,btime, etime)
+    aq224,df224 = acquireAqnetSensorData(224,btime, etime)
+    
+    # Met
+    t = figure(plot_width=1200,
+               plot_height=400,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='Temperature (C)',
+               title='Weather Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    t.line(aq221['htu21d_T']['data'].index, aq221['htu21d_T']['data'],color='blue',  legend='North Sensor')
+    t.line(aq224['htu21d_T']['data'].index, aq224['htu21d_T']['data'],color='orange',legend='South Sensor')
+    
+    u = figure(plot_width=1200,
+               plot_height=400,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='Relative Humidity (%)',
+               x_range=t.x_range)
+    u.line(aq221['htu21d_RH']['data'].index, aq221['htu21d_RH']['data'],color='blue',  legend='North Sensor')
+    u.line(aq224['htu21d_RH']['data'].index, aq224['htu21d_RH']['data'],color='orange',legend='South Sensor')
+    
+    p = figure(plot_width=1200,
+               plot_height=400,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='Pressure (mb)',
+               x_range=t.x_range)
+    p.line(aq221['bmp280_P']['data'].index, aq221['bmp280_P']['data'],color='blue',  legend='North Sensor')
+    p.line(aq224['bmp280_P']['data'].index, aq224['bmp280_P']['data'],color='orange',legend='South Sensor')
+    
+    p = vplot(t,u,p)
+    
+    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_Met_' + btime[0:10] + '_' + etime[0:10] + '.html',
+                title='Weather Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    save(p)
+    
+    # CO2
+    p = figure(plot_width=1200,
+               plot_height=600,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='CO2 concentration (ppmv)',
+               title='CO2 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    p.line(aq221['k30_CO2']['data'].index, aq221['k30_CO2']['data'],color='blue',  legend='North Sensor')
+    p.line(aq224['k30_CO2']['data'].index, aq224['k30_CO2']['data'],color='orange',legend='South Sensor')
+    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_CO2_' + btime[0:10] + '_' + etime[0:10] + '.html',
+                title='CO2 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    save(p)
+    
+    # PM2.5
+    p = figure(plot_width=1200,
+               plot_height=600,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='PM2.5 concentration (ug/m^3)',
+               title='PM2.5 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    p.line(aq221['opcn2_PM2.5']['data'].index, aq221['opcn2_PM2.5']['data'],   color='blue',  legend='North Sensor')
+    p.line(aq224['opcn2_PM2.5']['data'].index, aq224['opcn2_PM2.5']['data']+10,color='orange',legend='South Sensor + 10 ug/m^3')
+    p.y_range = Range1d(0, 30)
+    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_PM2.5_' + btime[0:10] + '_' + etime[0:10] + '.html',
+                title='PM2.5 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    save(p)
+    
+    # dB
+    p = figure(plot_width=1200,
+               plot_height=600,
+               x_axis_type ='datetime',
+               x_axis_label='Date (local)',
+               y_axis_label='dB',
+               title='Audio Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    p.line(aq221['dB']['data'].index, aq221['dB']['data'],   color='blue',  legend='North Sensor')
+    p.line(aq224['dB']['data'].index, aq224['dB']['data']+30,color='orange',legend='South Sensor + 30 dB')
+    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_dB_' + btime[0:10] + '_' + etime[0:10] + '.html',
+                title='Audio Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
+    save(p)
+    
+    return
