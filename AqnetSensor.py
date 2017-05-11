@@ -96,9 +96,10 @@ def mapAqnetSensorData():
     import folium
     
     # Coordinates estimated using map from Mike Diedesch and QGIS.
-    streetLightLocation = [[47.66964,-117.40315],
-                           [47.65717,-117.41025],
-                           [47.65449,-117.39002]]
+    streetLightLocation   = [[47.66964,-117.40315],
+                             [47.65717,-117.41025],
+                             [47.65449,-117.39002]]
+    referenceSiteLocation =  [47.66081,-117.40446]
     
     # Center map on the Spokane Academic Center (SAC); coordinates obtained from QGIS.
     m = folium.Map([47.66141,-117.40579], zoom_start=15)
@@ -114,9 +115,10 @@ def mapAqnetSensorData():
     popup1 = folium.Popup(iframe223, max_width=1000)
     popup2 = folium.Popup(iframe224, max_width=1000)
     
-    folium.Marker(streetLightLocation[0], popup=popup0, icon=folium.Icon(color='green',icon='info-sign')).add_to(m)
-    folium.Marker(streetLightLocation[1], popup=popup1, icon=folium.Icon(color='red',  icon='info-sign')).add_to(m)
-    folium.Marker(streetLightLocation[2], popup=popup2, icon=folium.Icon(color='green',icon='info-sign')).add_to(m)
+    folium.Marker(streetLightLocation[0], popup=popup0,           icon=folium.Icon(color='green',icon='info-sign')).add_to(m)
+    folium.Marker(streetLightLocation[1], popup=popup1,           icon=folium.Icon(color='red'  ,icon='info-sign')).add_to(m)
+    folium.Marker(streetLightLocation[2], popup=popup2,           icon=folium.Icon(color='green',icon='info-sign')).add_to(m)
+    folium.Marker(referenceSiteLocation , popup='Reference Site', icon=folium.Icon(color='blue' ,icon='info-sign')).add_to(m)
     
     m.save('/Users/vonw/Sites/urbanova/AQnetMap.html')
     
