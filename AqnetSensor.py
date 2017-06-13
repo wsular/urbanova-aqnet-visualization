@@ -149,7 +149,7 @@ def saveWeeklyAqnetSensorData(end_time):
     Reads in Aqnet data FOR THE PREVIOUS WEEK and generates HTML graphics.
     
     Input:
-        start_time - local time for start of week (typically Monday at 00:00:00)
+        end_time - local time for end of week (typically Monday at 00:00:00)
     
         Written by Von P. Walden
         Washington State University
