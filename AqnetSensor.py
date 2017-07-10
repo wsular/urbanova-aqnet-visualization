@@ -57,7 +57,7 @@ def plotAqnetSensorData(mowr_ID, aq={}):
     
     # If sensor data are missing, create warning in html file.
     if(len(aq) != 49):
-        with open('/Users/vonw/work/software/aqnet/data/sensor' + str(mowr_ID) + '.html','w') as html_file:
+        with open('html/sensor' + str(mowr_ID) + '.html','w') as html_file:
             html_file.write('<html>')
             html_file.write('    <body>')
             html_file.write('        <title>!! WARNING !!</title>')
@@ -100,7 +100,7 @@ def plotAqnetSensorData(mowr_ID, aq={}):
     
     ####  CREATE BOKEH HTML PLOT
     tabs = Tabs(tabs=[tab1, tab2, tab3, tab4, tab5, tab6])
-    save(tabs, '/Users/vonw/work/software/aqnet/data/sensor' + str(mowr_ID) + '.html')    
+    save(tabs, 'html/sensor' + str(mowr_ID) + '.html')    
 
     return
 
@@ -116,9 +116,9 @@ def mapAqnetSensorData():
     # Center map on the Spokane Academic Center (SAC); coordinates obtained from QGIS.
     m = folium.Map([47.66141,-117.40579], zoom_start=15)
     
-    html221=open('/Users/vonw/work/software/aqnet/data/sensor221.html').read()
-    html223=open('/Users/vonw/work/software/aqnet/data/sensor223.html').read()
-    html224=open('/Users/vonw/work/software/aqnet/data/sensor224.html').read()
+    html221=open('html/sensor221.html').read()
+    html223=open('html/sensor223.html').read()
+    html224=open('html/sensor224.html').read()
     
     iframe221 = folium.IFrame(html=html221, width=800, height=450)
     iframe223 = folium.IFrame(html=html223, width=800, height=450)
@@ -132,7 +132,7 @@ def mapAqnetSensorData():
     folium.Marker(streetLightLocation[2], popup=popup2,           icon=folium.Icon(color='green',icon='info-sign')).add_to(m)
     folium.Marker(referenceSiteLocation , popup='Reference Site', icon=folium.Icon(color='blue' ,icon='info-sign')).add_to(m)
 
-    m.save('/Users/vonw/Sites/urbanova/AQnetMap.html')
+    m.save('html/AQnetMap.html')
     
     return
 
@@ -223,7 +223,7 @@ def saveWeeklyAqnetSensorData(end_time):
 
     p = column(t,u,p)
     
-    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_Met_' + btime[0:10] + '_' + etime[0:10] + '.html',
+    output_file('html/UrbanovaWeekly_Met_' + btime[0:10] + '_' + etime[0:10] + '.html',
                 title='Weather Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
     save(p)
     
@@ -238,7 +238,7 @@ def saveWeeklyAqnetSensorData(end_time):
     p.line(aq223['k30_CO2']['data'].index, aq223['k30_CO2']['data'],color='purple',legend='Southwest')
     p.line(aq224['k30_CO2']['data'].index, aq224['k30_CO2']['data'],color='orange',legend='Southeast')
     p.add_tools(HoverTool())
-    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_CO2_' + btime[0:10] + '_' + etime[0:10] + '.html',
+    output_file('html/UrbanovaWeekly_CO2_' + btime[0:10] + '_' + etime[0:10] + '.html',
                 title='CO2 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
     save(p)
     
@@ -273,7 +273,7 @@ def saveWeeklyAqnetSensorData(end_time):
     
     p = column(p1,p2,p3)
     
-    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_PM2.5_' + btime[0:10] + '_' + etime[0:10] + '.html',
+    output_file('html/UrbanovaWeekly_PM2.5_' + btime[0:10] + '_' + etime[0:10] + '.html',
                 title='PM2.5 Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
     save(p)
     
@@ -307,7 +307,7 @@ def saveWeeklyAqnetSensorData(end_time):
     
     p = column(p1,p2,p3)
     
-    output_file('/Users/vonw/Sites/urbanova/weekly/UrbanovaWeekly_dB_' + btime[0:10] + '_' + etime[0:10] + '.html',
+    output_file('html/UrbanovaWeekly_dB_' + btime[0:10] + '_' + etime[0:10] + '.html',
                 title='Audio Measurements for week of ' + btime[0:10] + ' to ' + etime[0:10])
     save(p)
     
