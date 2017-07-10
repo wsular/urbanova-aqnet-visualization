@@ -8,7 +8,7 @@ import pandas   as     pd
 import numpy    as     np
 from   datetime import datetime, timedelta
 
-def acquireAqnetSensorData(mowr_ID, start_time, end_time):
+def acquireAqnetSensorData(API_key, mowr_ID, start_time, end_time):
     import os
     import json
     import pytz
@@ -20,7 +20,7 @@ def acquireAqnetSensorData(mowr_ID, start_time, end_time):
       return now.astimezone(tz).dst() != timedelta(0)
 
     # !! NOTE THAT the start and end times of the query must be in UTC. !!
-    os.system('curl -s -H "API-TOKEN-BEARER: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > /Users/vonw/work/software/aqnet/data/tmp.json');
+    os.system('curl -s -H "API-TOKEN-BEARER: ' + API_key + '" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > /Users/vonw/work/software/aqnet/data/tmp.json');
     
     with open('/Users/vonw/work/software/aqnet/data/tmp.json') as data_file:    
         raw = json.load(data_file)
