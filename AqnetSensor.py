@@ -20,7 +20,7 @@ def acquireAqnetSensorData(API_key, mowr_ID, start_time, end_time):
       return now.astimezone(tz).dst() != timedelta(0)
 
     # !! NOTE THAT the start and end times of the query must be in UTC. !!
-    os.system('curl -s -H "API-TOKEN-BEARER: ' + API_key + '" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > /Users/vonw/work/software/aqnet/data/tmp.json');
+    os.system('curl -s -H "API-TOKEN-BEARER: ' + API_key + '" "gateway.itronsensors.com/API/data" -d "format=RAW" -d "device_id="' + str(mowr_ID) + ' -d "start=' + start_time + '" -d "end=' + end_time + '" > tmp.json');
     
     with open('tmp.json') as data_file:    
         raw = json.load(data_file)
@@ -136,7 +136,7 @@ def mapAqnetSensorData():
     
     return
 
-def saveAqnetSensorData(filename, mowr_ID, start_time, end_time):
+def saveAqnetSensorData(filename, API_key, mowr_ID, start_time, end_time):
     """
     Reads in Aqnet data and saves data variables in CSV file.
     These data are averaged into 2-minute averages to eliminate gaps in the time series.
@@ -145,7 +145,7 @@ def saveAqnetSensorData(filename, mowr_ID, start_time, end_time):
         Washington State University
         27 April 2017
     """
-    aq, tdf = acquireAqnetSensorData(mowr_ID, start_time, end_time)
+    aq, tdf = acquireAqnetSensorData(API_key, mowr_ID, start_time, end_time)
     
     # Currently only outputs T, U, P, CO2, PM2.5, and dB.
     df = pd.concat([aq['htu21d_T']['data'], aq['htu21d_RH']['data'], aq['bmp280_P']['data'], aq['k30_CO2']['data'], aq['opcn2_PM2.5']['data'], aq['dB']['data'] ], axis=1)
